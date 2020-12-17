@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="PerekatEditor.Controls.ObjectList"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PerekatEditor.Controls"
+             xmlns:converters="clr-namespace:PerekatEditor.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:LevelObjectNameConverter x:Key="LevelObjectNameConverter"/>
+            <converters:LevelObjectTypeConverter x:Key="LevelObjectTypeConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    
+    <ListView x:Name="ObjectListView" ItemsSource="{Binding LevelObjects, UpdateSourceTrigger=PropertyChanged}" RenderOptions.BitmapScalingMode="HighQuality"
+              SelectionChanged="ListView_SelectionChanged" LostFocus="ListView_LostFocus" GotFocus="ListView_GotFocus" KeyDown="ListView_KeyDown" Loaded="ListView_Loaded">
+        <ListView.Resources>
+            <ContextMenu x:Key="ItemContextMenu">
+                <MenuItem Header="{StaticResource ObjectListContextMenu_Properties}" Click="Properties_Click"/>
+                <Separator/>
+                <MenuItem Header="{StaticResource ObjectListContextMenu_Delete}" Click="Delete_Click"/>
+            </ContextMenu>
+        </ListView.Resources>
+
+        <ListView.ItemContainerStyle>
+            <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="ContextMenu" Value="{StaticResource ItemContextMenu}"/>
+            </Style>
+        </ListView.ItemContainerStyle>
+        
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding ObjectType, Converter={StaticResource LevelObjectTypeConverter}, ConverterParameter=IgnoreExceptions}"
+                                   Width="16" Height="16" Margin="0,0,4,0" Stretch="Uniform"/>
+                    <TextBlock Text="{Binding Converter={StaticResource LevelObjectNameConverter}}"/>
+                </StackPanel>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</UserControl>

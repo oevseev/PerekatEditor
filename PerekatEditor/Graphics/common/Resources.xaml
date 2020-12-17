@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Environment-nonspecific object sprites -->
+    <BitmapImage x:Key="Object_Life" UriSource="objects/bubble.png"/>
+    <BitmapImage x:Key="Object_Checkpoint" UriSource="objects/checkpoint.png"/>
+    <!-- <BitmapImage x:Key="Object_CheckpointAvailable" UriSource="objects/cp-available.png"/> -->
+    <!-- <BitmapImage x:Key="Object_CheckpointCurrent" UriSource="objects/cp-current.png"/> -->
+    <BitmapImage x:Key="Object_Ring" UriSource="objects/ring.png"/>
+    <BitmapImage x:Key="Object_RingBig" UriSource="objects/ring-big.png"/>
+    <BitmapImage x:Key="Yoba_Red" UriSource="yobas/red.png"/>
+</ResourceDictionary>

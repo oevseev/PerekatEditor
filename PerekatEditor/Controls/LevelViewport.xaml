@@ -1,0 +1,299 @@
+﻿<UserControl x:Class="PerekatEditor.Controls.LevelViewport"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:PerekatEditor"
+             xmlns:objects="clr-namespace:PerekatEditor.Objects"
+             xmlns:converters="clr-namespace:PerekatEditor.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <converters:AdjustmentConverter x:Key="AdjustmentConverter"/>
+            <converters:AreaConverter x:Key="AreaConverter"/>
+            <converters:BlockConverter x:Key="BlockConverter"/>
+            <converters:CoordConverter x:Key="CoordConverter"/>
+            <converters:DirectionConverter x:Key="DirectionConverter"/>
+            <converters:LevelObjectSizeConverter x:Key="LevelObjectSizeConverter"/>
+            <converters:LevelObjectTypeConverter x:Key="LevelObjectTypeConverter"/>
+            <converters:SpawnSizeConverter x:Key="SpawnSizeConverter"/>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid Width="{Binding GridWidth, UpdateSourceTrigger=PropertyChanged}"
+          Height="{Binding GridHeight, UpdateSourceTrigger=PropertyChanged}"
+          Background="White"
+          RenderOptions.BitmapScalingMode="HighQuality"
+          Loaded="Viewport_Loaded"
+          MouseDown="Viewport_MouseDown"
+          MouseMove="Viewport_MouseMove"
+          MouseUp="Grid_MouseUp" MouseLeave="Grid_MouseLeave">
+
+        <!-- Area layer -->
+        <ItemsControl ItemsSource="{Binding Areas, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type objects:Area}">
+                    <Rectangle Fill="{Binding ObjectType, Converter={StaticResource AreaConverter}}">
+                        <Rectangle.Width>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Width"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Rectangle.Width>
+                        <Rectangle.Height>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Height"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Rectangle.Height>
+                    </Rectangle>
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="X"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Y"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+
+        <!-- Listeners layer -->
+        <ItemsControl ItemsSource="{Binding LevelObjects, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type objects:Listener}">
+                    <Image Stretch="Uniform">
+                        <Image.Width>
+                            <MultiBinding Converter="{StaticResource LevelObjectSizeConverter}">
+                                <Binding Path="ObjectType"/>
+                                <Binding Path="Direction"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Image.Width>
+                        <Image.Source>
+                            <MultiBinding Converter="{StaticResource LevelObjectTypeConverter}">
+                                <Binding Path="ObjectType"/>
+                                <Binding Path="Direction" Converter="{StaticResource DirectionConverter}"/>
+                            </MultiBinding>
+                        </Image.Source>
+                    </Image>
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemContainerStyle>
+                <Style>
+                    <Setter Property="Canvas.Left">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="X"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                                <Binding Path="." Converter="{StaticResource AdjustmentConverter}" ConverterParameter="X"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Canvas.Top">
+                        <Setter.Value>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Y"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                                <Binding Path="." Converter="{StaticResource AdjustmentConverter}" ConverterParameter="Y"/>
+                            </MultiBinding>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ItemsControl.ItemContainerStyle>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <!-- Block layer -->
+        <ItemsControl ItemsSource="{Binding Blocks, UpdateSourceTrigger=PropertyChanged}">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type objects:Block}">
+                    <Image Source="{Binding BlockName, Converter={StaticResource BlockConverter}}"/>
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding LevelHeight, UpdateSourceTrigger=PropertyChanged}"
+                                 Columns="{Binding LevelWidth, UpdateSourceTrigger=PropertyChanged}"
+                                 RenderOptions.EdgeMode="Aliased"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <!-- Entities path layer -->
+        <ItemsControl ItemsSource="{Binding Entities, UpdateSourceTrigger=PropertyChanged}" Opacity="0.5">
+            <ItemsControl.Resources>
+                <DataTemplate DataType="{x:Type objects:Entity}">
+                    <Line Stroke="Red" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Triangle">
+                        <Line.X1>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="X1"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Line.X1>
+                        <Line.Y1>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Y1"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Line.Y1>
+                        <Line.X2>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="X2"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Line.X2>
+                        <Line.Y2>
+                            <MultiBinding Converter="{StaticResource CoordConverter}">
+                                <Binding Path="Y2"/>
+                                <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}"/>
+                            </MultiBinding>
+                        </Line.Y2>
+                    </Line>
+                </DataTemplate>
+            </ItemsControl.Resources>
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Canvas/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+        </ItemsControl>
+
+        <!-- Block placement layer -->
+        <Canvas Visibility="{Binding BlockPlacementVisibility, UpdateSourceTrigger=PropertyChanged}">
+            <Image Source="{Binding SelectedBlockId, Converter={StaticResource BlockConverter}, UpdateSourceTrigger=PropertyChanged}"
+                   Opacity="0.5" Width="{Binding BlockSize, UpdateSourceTrigger=PropertyChanged}" Stretch="Uniform">
+                <Canvas.Left>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentPosition.X" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Left>
+                <Canvas.Top>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentPosition.Y" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Top>
+            </Image>
+        </Canvas>
+
+        <!-- Listener placement layer -->
+        <Canvas Visibility="{Binding ListenerPlacementVisibility, UpdateSourceTrigger=PropertyChanged}">
+            <Image Opacity="0.5" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+                <Image.Source>
+                    <MultiBinding Converter="{StaticResource LevelObjectTypeConverter}">
+                        <Binding Path="SelectedListenerType" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="SelectedListenerDirection" Converter="{StaticResource DirectionConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Image.Source>
+                <Image.Width>
+                    <MultiBinding Converter="{StaticResource LevelObjectSizeConverter}">
+                        <Binding Path="SelectedListenerType" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="SelectedListenerDirection" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Image.Width>
+                <Canvas.Left>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentPosition.X" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="CurrentListenerObject" Converter="{StaticResource AdjustmentConverter}" ConverterParameter="X" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Left>
+                <Canvas.Top>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentPosition.Y" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="CurrentListenerObject" Converter="{StaticResource AdjustmentConverter}" ConverterParameter="Y" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Top>
+            </Image>
+        </Canvas>
+
+        <!-- Listener selection layer -->
+        <Canvas Visibility="{Binding SelectionVisibility, UpdateSourceTrigger=PropertyChanged}">
+            <Grid Background="Lime" Opacity="0.5">
+                <Image Opacity="0" Stretch="Uniform" RenderTransformOrigin="0.5,0.5">
+                    <Image.Source>
+                        <MultiBinding Converter="{StaticResource LevelObjectTypeConverter}">
+                            <Binding Path="CurrentSelectionObject.ObjectType" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="CurrentSelectionObject.Direction" Converter="{StaticResource DirectionConverter}" UpdateSourceTrigger="PropertyChanged"/>
+                        </MultiBinding>
+                    </Image.Source>
+                    <Image.Width>
+                        <MultiBinding Converter="{StaticResource LevelObjectSizeConverter}">
+                            <Binding Path="CurrentSelectionObject.ObjectType" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="CurrentSelectionObject.Direction" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        </MultiBinding>
+                    </Image.Width>
+                </Image>
+                <Canvas.Left>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentSelectionObject.X" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="CurrentSelectionObject" Converter="{StaticResource AdjustmentConverter}" ConverterParameter="X" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Left>
+                <Canvas.Top>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="CurrentSelectionObject.Y" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="CurrentSelectionObject" Converter="{StaticResource AdjustmentConverter}" ConverterParameter="Y" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Top>
+            </Grid>
+        </Canvas>
+
+        <!-- Spawn position layer -->
+        <Canvas Visibility="{Binding SpawnPositionVisibility, UpdateSourceTrigger=PropertyChanged}">
+            <Image Stretch="Uniform" Source="{DynamicResource Yoba_Red}">
+                <Image.Width>
+                    <MultiBinding Converter="{StaticResource SpawnSizeConverter}">
+                        <Binding Path="DataContext.SpawnBig" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Image.Width>
+                <Canvas.Left>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="SpawnPosition.X" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Left>
+                <Canvas.Top>
+                    <MultiBinding Converter="{StaticResource CoordConverter}">
+                        <Binding Path="SpawnPosition.Y" UpdateSourceTrigger="PropertyChanged"/>
+                        <Binding Path="DataContext.BlockSize" RelativeSource="{RelativeSource FindAncestor, AncestorType=UserControl}" UpdateSourceTrigger="PropertyChanged"/>
+                    </MultiBinding>
+                </Canvas.Top>
+            </Image>
+        </Canvas>
+    </Grid>
+
+</UserControl>

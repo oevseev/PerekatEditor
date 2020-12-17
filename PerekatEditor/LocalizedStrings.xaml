@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:system="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:PerekatEditor">
+    <system:String x:Key="FileMenu">_File</system:String>
+    <system:String x:Key="FileMenu_New">_New</system:String>
+    <system:String x:Key="FileMenu_Open">_Open...</system:String>
+    <system:String x:Key="FileMenu_Save">_Save</system:String>
+    <system:String x:Key="FileMenu_SaveAs">Save _As...</system:String>
+    <system:String x:Key="FileMenu_Close">_Close</system:String>
+    <system:String x:Key="FileMenu_Exit">E_xit</system:String>
+
+    <system:String x:Key="EditMenu">_Edit</system:String>
+    <system:String x:Key="EditMenu_Undo">_Undo</system:String>
+    <system:String x:Key="EditMenu_Redo">_Redo</system:String>
+    <system:String x:Key="EditMenu_Cut">Cu_t</system:String>
+    <system:String x:Key="EditMenu_Copy">_Copy</system:String>
+    <system:String x:Key="EditMenu_Paste">_Paste</system:String>
+    <system:String x:Key="EditMenu_Delete">_Delete</system:String>
+    <system:String x:Key="EditMenu_SelectAll">Select A_ll</system:String>
+    <system:String x:Key="EditMenu_LevelProperties">Level Pr_operties</system:String>
+
+    <system:String x:Key="ObjectListContextMenu_Properties">Properties</system:String>
+    <system:String x:Key="ObjectListContextMenu_Delete">Delete</system:String>
+</ResourceDictionary>

@@ -1,0 +1,16 @@
+﻿<Application x:Class="PerekatEditor.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:PerekatEditor"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="LocalizedStrings.xaml"/>
+                <ResourceDictionary Source="Graphics/common/Resources.xaml"/>
+                <ResourceDictionary Source="Graphics/sand/Resources.xaml"/>
+                <ResourceDictionary Source="Graphics/ui/Resources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
